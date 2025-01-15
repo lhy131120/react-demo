@@ -7,40 +7,59 @@ function App() {
 	const apiUrl = import.meta.env.VITE_BASE_URL;
 	const apiPath = import.meta.env.VITE_API_PATH;
 	const [formData, setFormData] = useState({
-		username: "sakimotorin@gmail.com",
-		password: "zd5OGPus@!",
+		username: "",
+		password: "",
 	});
 	const [isAuth, setIsAuth] = useState(false);
 	const [products, setProducts] = useState([]);
 	const [tempProduct, setTempProduct] = useState(null);
 
-	const handleSubmit = (e) => {
+  const authorization = async() => {
+    console.log("fn authorization");
+    try {
+      // eslint-disable-next-line no-useless-escape
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)customToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      const res = await axios.post(`${apiUrl}/v2/api/user/check`, {}, {
+        headers: { Authorization: token }
+      });
+      console.log(res.data);
+			// res.data.success === true ? loginState(true) : loginState(false);
+      setIsAuth(true)
+    } catch (error) {
+      console.error(error.response.data.message);
+      setIsAuth(false)
+    }
+  }
+
+  
+  const getProducts = async () => {
+    try {
+      // eslint-disable-next-line no-useless-escape
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)customToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      axios.defaults.headers.common["Authorization"] = token;
+      const res = await axios.get(`${apiUrl}/v2/api/${apiPath}/admin/products`);
+      setProducts(res.data.products)
+      console.log(res)
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const handleSubmit = async (e) => {
 		e.preventDefault();
-		axios
-			.post(`${apiUrl}/v2/admin/signin`, formData)
-			.then((res) => {
-				const { expired, token } = res.data;
-				document.cookie = `customToken=${token}; expires=${new Date(expired)}`;
+		try {
+			const res = await axios.post(`${apiUrl}/v2/admin/signin`, formData);
+      const { expired, token } = res.data;
+			document.cookie = `customToken=${token}; expires=${new Date(expired)}`;
+      console.log(res);
+      getProducts()
+      setIsAuth(true)
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
-				axios.defaults.headers.common["Authorization"] = token;
-
-				axios
-					.get(`${apiUrl}/v2/api/${apiPath}/admin/products`)
-					.then((res) => {
-						setProducts(res.data.products);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-
-				setIsAuth(true); // 之後轉做Router
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	const handleInputChange = (e) => {
+  const handleInputChange = (e) => {
 		const { value, name } = e.target;
 		setFormData({
 			...formData,
@@ -48,13 +67,19 @@ function App() {
 		});
 	};
 
+  // authorization();
+
 	return (
 		<>
+			{authorization}
 			{isAuth ? (
 				<div className="container">
 					<div className="row mt-5">
 						<div className="col-md-6">
 							<h2>產品列表</h2>
+							<button className="btn btn-warning" type="button" onClick={authorization}>
+								Check
+							</button>
 							<table className="table">
 								<thead>
 									<tr>
