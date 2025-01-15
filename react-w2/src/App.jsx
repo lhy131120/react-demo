@@ -30,7 +30,6 @@ function App() {
       setIsAuth(false)
     }
   }
-
   
   const getProducts = async () => {
     try {
@@ -71,7 +70,6 @@ function App() {
 
 	return (
 		<>
-			{authorization}
 			{isAuth ? (
 				<div className="container">
 					<div className="row mt-5">
