@@ -15,15 +15,12 @@ function App() {
 	const [tempProduct, setTempProduct] = useState(null);
 
   const authorization = async() => {
-    console.log("fn authorization");
     try {
       // eslint-disable-next-line no-useless-escape
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)customToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       const res = await axios.post(`${apiUrl}/v2/api/user/check`, {}, {
         headers: { Authorization: token }
       });
-      console.log(res.data);
-			// res.data.success === true ? loginState(true) : loginState(false);
       setIsAuth(true)
     } catch (error) {
       console.error(error.response.data.message);
@@ -33,24 +30,22 @@ function App() {
   
   const getProducts = async () => {
     try {
-      // eslint-disable-next-line no-useless-escape
-      const token = document.cookie.replace(/(?:(?:^|.*;\s*)customToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      axios.defaults.headers.common["Authorization"] = token;
       const res = await axios.get(`${apiUrl}/v2/api/${apiPath}/admin/products`);
       setProducts(res.data.products)
-      console.log(res)
     } catch (err) {
       console.error(err);
     }
   }
-
+  
   const handleSubmit = async (e) => {
-		e.preventDefault();
+    e.preventDefault();
 		try {
-			const res = await axios.post(`${apiUrl}/v2/admin/signin`, formData);
+      const res = await axios.post(`${apiUrl}/v2/admin/signin`, formData);
       const { expired, token } = res.data;
 			document.cookie = `customToken=${token}; expires=${new Date(expired)}`;
-      console.log(res);
+      // eslint-disable-next-line no-useless-escape
+      const customToken = document.cookie.replace(/(?:(?:^|.*;\s*)customToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      axios.defaults.headers.common["Authorization"] = customToken;
       getProducts()
       setIsAuth(true)
 		} catch (err) {
@@ -121,7 +116,7 @@ function App() {
 											{tempProduct.title}
 											<span className="badge bg-primary ms-2">{tempProduct.category}</span>
 										</h5>
-										<p className="card-text">商品描述：{tempProduct.descriptiony}</p>
+										<p className="card-text">商品描述：{tempProduct.description}</p>
 										<p className="card-text">商品內容：{tempProduct.content}</p>
 										<div className="d-flex">
 											<p className="card-text text-secondary">
