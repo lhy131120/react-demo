@@ -121,7 +121,7 @@ function App() {
 											{tempProduct.title}
 											<span className="badge bg-primary ms-2">{tempProduct.category}</span>
 										</h5>
-										<p className="card-text">商品描述：{tempProduct.category}</p>
+										<p className="card-text">商品描述：{tempProduct.descriptiony}</p>
 										<p className="card-text">商品內容：{tempProduct.content}</p>
 										<div className="d-flex">
 											<p className="card-text text-secondary">
