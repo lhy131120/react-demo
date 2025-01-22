@@ -6,7 +6,7 @@ body {
   text-align: center;
 }
 
-.login {
+.loginForm {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,22 +14,7 @@ body {
   height: 100vh;
 }
 
-.form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-}
-
 img {
   object-fit: contain;
   max-width: 100%;
-}
-
-.primary-image {
-  height: 300px;
-}
-
-.images {
-  height: 150px;
 }
